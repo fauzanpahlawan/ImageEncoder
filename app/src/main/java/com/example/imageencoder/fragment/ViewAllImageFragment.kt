@@ -51,14 +51,17 @@ class ViewAllImageFragment : BaseFragment() {
         launch {
             val images = database.imageDao().getImages()
             if (images.isNotEmpty()) {
-                tv_such_empty.visibility = View.GONE
+                tv_such_empty.visibility = View.VISIBLE
+                tv_such_empty.text = resources.getString(R.string.loading_images)
             } else {
+                tv_such_empty.visibility = View.VISIBLE
                 tv_such_empty.text = resources.getString(R.string.no_images)
             }
             imageAdapter =
                 ImageAdapter(images) { imgData ->
                     onItemClicked(imgData)
                 }.apply { notifyDataSetChanged() }
+            tv_such_empty.visibility = View.GONE
 
             rv_images.apply {
                 layoutManager = LinearLayoutManager(this.context)
@@ -84,6 +87,7 @@ class ViewAllImageFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_IMAGE_REQUEST_CODE) {
+                tv_such_empty.visibility = View.VISIBLE
                 tv_such_empty.text = resources.getString(R.string.loading_images)
                 val clipData = data?.clipData
                 val dataUri = data?.data
@@ -164,6 +168,7 @@ class ViewAllImageFragment : BaseFragment() {
                 database.imageDao().deleteAll()
                 imageAdapter.setNewData(database.imageDao().getImages())
                 imageAdapter.notifyDataSetChanged()
+                tv_such_empty.visibility = View.VISIBLE
                 tv_such_empty.text = resources.getString(R.string.no_images)
             }
         }
